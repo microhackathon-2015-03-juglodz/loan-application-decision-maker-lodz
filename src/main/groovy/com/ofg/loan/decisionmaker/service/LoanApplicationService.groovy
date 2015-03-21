@@ -1,8 +1,10 @@
 package com.ofg.loan.decisionmaker.service
+
 import com.ofg.infrastructure.web.resttemplate.fluent.ServiceRestClient
 import com.ofg.loan.decisionmaker.LoanApplication
 import com.ofg.loan.decisionmaker.LoanApplicationResult
 import com.ofg.loan.decisionmaker.repository.LoanApplicationRepository
+import groovy.text.SimpleTemplateEngine
 import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -37,8 +39,8 @@ class LoanApplicationService {
             result = "SUCCESS"
         }
 
-        //sendStatusToReportingService(loanApplicationId, loanApplication, result);
-        //sendStatusToMarketingService(loanApplicationId, result);
+        sendStatusToReportingService(loanApplicationId, loanApplication, result);
+        sendStatusToMarketingService(loanApplicationId, result);
 
         loanApplicationRepository.save(new LoanApplicationResult(loanApplicationId, result))
     }
@@ -54,7 +56,7 @@ class LoanApplicationService {
 
     private void sendStatusToReportingService(Long loanApplicationId, LoanApplication loanApplication, String result) {
         serviceRestClient.forService("reportingService").post().onUrl("/api/reporting")
-                .body(buildPlacesJson(loanApplicationId, loanApplication, result))
+                .body(buildLoanReportingJson(loanApplicationId, loanApplication, result))
                 .withHeaders()
                 .contentTypeJson()
                 .andExecuteFor()
@@ -63,20 +65,52 @@ class LoanApplicationService {
     }
 
     private void sendStatusToMarketingService(String loanApplicationId, LoanApplication loanApplication, String result) {
-        //serviceRestClient.forService("marketingService").post().onUrl()
+        serviceRestClient.forService("marketingService").post().onUrl("/api/marketing/" + loanApplicationId)
+                .body(buildLoanMarketingJson(loanApplication, result))
+                .withHeaders()
+                .contentTypeJson()
+                .andExecuteFor()
+                .anObject()
+                .ofType(String)
     }
 
-    /*String buildPlacesJson(long applicationId, LoanApplication loanApplication, String result) {
-        return """[
-                       ${
-            return new SimpleTemplateEngine().createTemplate(JSON_RESPONSE_TEMPLATE)
-                    .make([loanId     : applicationId,
-                           job        : loanApplication.getJob(),
-                           amount     : loanApplication.getAmount(),
-                           fraudStatus: loanApplication.getFraudStatus(),
-                           decision   : result])
-                    .toString()
-        }
-                   ]""".toString()
-    }  */
+    String buildLoanReportingJson(long applicationId, LoanApplication loanApplication, String result) {
+        return new SimpleTemplateEngine().createTemplate(JSON_RESPONSE_TEMPLATE_REPORTING)
+                .make([loanId     : applicationId,
+                       job        : loanApplication.getJob(),
+                       amount     : loanApplication.getAmount(),
+                       fraudStatus: loanApplication.getFraudStatus(),
+                       result     : result])
+                .toString();
+    }
+
+    String buildLoanMarketingJson(LoanApplication loanApplication, String result) {
+        return new SimpleTemplateEngine().createTemplate(JSON_RESPONSE_TEMPLATE_REPORTING)
+                .make([firstName: loanApplication.getFirstName(),
+                       lastName : loanApplication.getLastName(),
+                       result   : result])
+                .toString();
+    }
+
+
+    private static final String JSON_RESPONSE_TEMPLATE_REPORTING = '''
+                {
+                    "loanId" : "$loanId",
+                    "job" : "$job",
+                    "amount" : $amount,
+                    "fraudStatus" : "$fraudStatus",
+                    "decision" : "$decision"
+                }
+                '''
+
+    private static final String JSON_RESPONSE_TEMPLATE_MARKETING = '''
+                {
+                    "person" : {
+                        "firstName": "$firstName",
+                        "lastName": "$lastName',
+                    },
+                    "decision" : "$decision"
+                }
+                '''
+
 }

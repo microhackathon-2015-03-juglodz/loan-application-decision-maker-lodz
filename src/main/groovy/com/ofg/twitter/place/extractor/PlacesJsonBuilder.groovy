@@ -11,7 +11,7 @@ class PlacesJsonBuilder {
     String buildPlacesJson(long pairId, Map<String, Optional<Place>> places) {
         return """[
                        ${places.collect { String tweetId, Optional<Place> place ->
-                            
+
                             return new SimpleTemplateEngine().createTemplate(JSON_RESPONSE_TEMPLATE)
                             .make([pairId: pairId,
                                    tweetId : tweetId,
@@ -26,7 +26,6 @@ class PlacesJsonBuilder {
                 {
                     "pair_id" : $pairId,
                     "tweet_id" : "$tweetId"
-                    <% if (place.present) { %> 
                         ,"place" :
                         {
                             "name":"${place.get().placeDetails.name}",

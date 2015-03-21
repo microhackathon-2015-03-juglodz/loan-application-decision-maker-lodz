@@ -1,5 +1,6 @@
 package com.ofg.loan.decisionmaker.service
 
+import com.netflix.hystrix.HystrixCommand
 import com.ofg.infrastructure.web.resttemplate.fluent.ServiceRestClient
 import com.ofg.loan.decisionmaker.LoanApplication
 import com.ofg.loan.decisionmaker.LoanApplicationResult
@@ -55,7 +56,11 @@ class LoanApplicationService {
     }
 
     private void sendStatusToReportingService(Long loanApplicationId, LoanApplication loanApplication, String result) {
-        serviceRestClient.forService("reportingService").post().onUrl("/api/loans/decisions")
+        serviceRestClient.forService("reportingService").post()
+                .withCircuitBreaker(HystrixCommand.Setter.withGroupKey('reporting-service-lodz'), {
+            '{}'
+        })
+                .onUrl("/api/loans/decisions")
                 .body(buildLoanReportingJson(loanApplicationId, loanApplication, result))
                 .withHeaders()
                 .contentTypeJson()
@@ -65,7 +70,11 @@ class LoanApplicationService {
     }
 
     private void sendStatusToMarketingService(String loanApplicationId, LoanApplication loanApplication, String result) {
-        serviceRestClient.forService("marketingService").post().onUrl("/api/marketing/" + loanApplicationId)
+        serviceRestClient.forService("marketingService").put().
+                withCircuitBreaker(HystrixCommand.Setter.withGroupKey('marketing-offer-generator-lodz'), {
+                    '{}'
+                })
+        onUrl("/api/marketing/" + loanApplicationId)
                 .body(buildLoanMarketingJson(loanApplication, result))
                 .withHeaders()
                 .contentTypeJson()
@@ -80,7 +89,7 @@ class LoanApplicationService {
                        job        : loanApplication.getJob(),
                        amount     : loanApplication.getAmount(),
                        fraudStatus: loanApplication.getFraudStatus(),
-                       decision     : result])
+                       decision   : result])
                 .toString();
     }
 
@@ -88,7 +97,7 @@ class LoanApplicationService {
         return new SimpleTemplateEngine().createTemplate(JSON_RESPONSE_TEMPLATE_REPORTING)
                 .make([firstName: loanApplication.getFirstName(),
                        lastName : loanApplication.getLastName(),
-                       decision   : result])
+                       decision : result])
                 .toString();
     }
 

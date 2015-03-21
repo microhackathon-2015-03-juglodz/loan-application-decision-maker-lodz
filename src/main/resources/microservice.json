@@ -2,9 +2,13 @@
     "lodz": {
         "this": "com/ofg/loan-application-decision-maker-lodz",
         "dependencies": {
-            "collerator": {
-                "path": "com/ofg/some-other-service"
+            "reportingService": {
+                "path": "com/ofg/reporting-service-lodz"
+            },
+            "marketingService": {
+                "path": "com/ofg/marketing-offer-generator-lodz"
             }
+
         }
     }
 }

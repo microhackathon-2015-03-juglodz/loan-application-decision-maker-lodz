@@ -106,7 +106,7 @@ class LoanApplicationService {
                 {
                     "loanId" : "$loanId",
                     "job" : "$job",
-                    "amount" : $amount,
+                    "amount" : "$amount",
                     "fraudStatus" : "$fraudStatus",
                     "decision" : "$decision"
                 }

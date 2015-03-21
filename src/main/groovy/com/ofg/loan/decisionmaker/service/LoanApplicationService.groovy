@@ -55,7 +55,7 @@ class LoanApplicationService {
     }
 
     private void sendStatusToReportingService(Long loanApplicationId, LoanApplication loanApplication, String result) {
-        serviceRestClient.forService("reportingService").post().onUrl("/api/reporting")
+        serviceRestClient.forService("reportingService").post().onUrl("/api/loans/decisions")
                 .body(buildLoanReportingJson(loanApplicationId, loanApplication, result))
                 .withHeaders()
                 .contentTypeJson()

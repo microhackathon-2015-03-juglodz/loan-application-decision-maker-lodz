@@ -69,7 +69,7 @@ class LoanApplicationService {
                 .ofType(String)
     }
 
-    private void sendStatusToMarketingService(String loanApplicationId, LoanApplication loanApplication, String result) {
+    private void sendStatusToMarketingService(LoanApplication loanApplication, String result) {
         serviceRestClient.forService("marketingService").put().
                 withCircuitBreaker(HystrixCommand.Setter.withGroupKey({'marketing-offer-generator-lodz'}), {
                     '{}'

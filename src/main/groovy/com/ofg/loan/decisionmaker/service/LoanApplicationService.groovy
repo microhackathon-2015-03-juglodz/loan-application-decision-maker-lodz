@@ -116,7 +116,7 @@ class LoanApplicationService {
                 {
                     "person" : {
                         "firstName": "$firstName",
-                        "lastName": "$lastName",
+                        "lastName": "$lastName"
                     },
                     "decision" : "$decision"
                 }

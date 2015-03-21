@@ -41,7 +41,7 @@ class LoanApplicationService {
         }
 
         sendStatusToReportingService(loanApplicationId, loanApplication, result);
-        sendStatusToMarketingService(loanApplication, result);
+        sendStatusToMarketingService(loanApplicationId, loanApplication, result);
 
         loanApplicationRepository.save(new LoanApplicationResult(loanApplicationId, result))
     }
@@ -69,7 +69,7 @@ class LoanApplicationService {
                 .ofType(String)
     }
 
-    private void sendStatusToMarketingService(LoanApplication loanApplication, String result) {
+    private void sendStatusToMarketingService(Long loanApplicationId, LoanApplication loanApplication, String result) {
         serviceRestClient.forService("marketingService").put().
                 withCircuitBreaker(HystrixCommand.Setter.withGroupKey({'marketing-offer-generator-lodz'}), {
                     '{}'

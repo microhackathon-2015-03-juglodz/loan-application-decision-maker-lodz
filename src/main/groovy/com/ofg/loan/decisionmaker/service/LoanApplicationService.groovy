@@ -57,7 +57,7 @@ class LoanApplicationService {
 
     private void sendStatusToReportingService(Long loanApplicationId, LoanApplication loanApplication, String result) {
         serviceRestClient.forService("reportingService").post()
-                .withCircuitBreaker(HystrixCommand.Setter.withGroupKey('reporting-service-lodz'), {
+                .withCircuitBreaker(HystrixCommand.Setter.withGroupKey({'reporting-service-lodz'}), {
             '{}'
         })
                 .onUrl("/api/loans/decisions")
@@ -71,7 +71,7 @@ class LoanApplicationService {
 
     private void sendStatusToMarketingService(String loanApplicationId, LoanApplication loanApplication, String result) {
         serviceRestClient.forService("marketingService").put().
-                withCircuitBreaker(HystrixCommand.Setter.withGroupKey('marketing-offer-generator-lodz'), {
+                withCircuitBreaker(HystrixCommand.Setter.withGroupKey({'marketing-offer-generator-lodz'}), {
                     '{}'
                 })
         onUrl("/api/marketing/" + loanApplicationId)

@@ -41,7 +41,7 @@ class LoanApplicationService {
         }
 
         sendStatusToReportingService(loanApplicationId, loanApplication, result);
-        sendStatusToMarketingService(loanApplicationId, result);
+        sendStatusToMarketingService(loanApplication, result);
 
         loanApplicationRepository.save(new LoanApplicationResult(loanApplicationId, result))
     }

@@ -80,7 +80,7 @@ class LoanApplicationService {
                        job        : loanApplication.getJob(),
                        amount     : loanApplication.getAmount(),
                        fraudStatus: loanApplication.getFraudStatus(),
-                       result     : result])
+                       decision     : result])
                 .toString();
     }
 
@@ -88,7 +88,7 @@ class LoanApplicationService {
         return new SimpleTemplateEngine().createTemplate(JSON_RESPONSE_TEMPLATE_REPORTING)
                 .make([firstName: loanApplication.getFirstName(),
                        lastName : loanApplication.getLastName(),
-                       result   : result])
+                       decision   : result])
                 .toString();
     }
 

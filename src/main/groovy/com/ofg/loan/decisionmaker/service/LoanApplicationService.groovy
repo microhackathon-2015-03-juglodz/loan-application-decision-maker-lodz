@@ -74,7 +74,7 @@ class LoanApplicationService {
                 withCircuitBreaker(HystrixCommand.Setter.withGroupKey({'marketing-offer-generator-lodz'}), {
                     '{}'
                 })
-        onUrl("/api/marketing/" + loanApplicationId)
+                .onUrl("/api/marketing/" + loanApplicationId)
                 .body(buildLoanMarketingJson(loanApplication, result))
                 .withHeaders()
                 .contentTypeJson()

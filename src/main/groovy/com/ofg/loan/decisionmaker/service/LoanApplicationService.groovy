@@ -94,7 +94,7 @@ class LoanApplicationService {
     }
 
     String buildLoanMarketingJson(LoanApplication loanApplication, String result) {
-        return new SimpleTemplateEngine().createTemplate(JSON_RESPONSE_TEMPLATE_REPORTING)
+        return new SimpleTemplateEngine().createTemplate(JSON_RESPONSE_TEMPLATE_MARKETING)
                 .make([firstName: loanApplication.getFirstName(),
                        lastName : loanApplication.getLastName(),
                        decision : result])
